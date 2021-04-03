@@ -221,4 +221,12 @@ class MinuteHandView(ctx : Context) : View(ctx) {
             }
         }
     }
+
+    companion object {
+        fun create(activity : Activity) : MinuteHandView {
+            val view : MinuteHandView = MinuteHandView(activity)
+            activity.setContentView(view)
+            return view
+        }
+    }
 }
