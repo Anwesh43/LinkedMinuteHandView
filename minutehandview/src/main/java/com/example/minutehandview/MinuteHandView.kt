@@ -196,4 +196,27 @@ class MinuteHandView(ctx : Context) : View(ctx) {
             curr.startUpdating(cb)
         }
     }
+
+    data class Renderer(var view : MinuteHandView) {
+
+        private val animator : Animator = Animator(view)
+        private val mh : MinuteHand = MinuteHand(0)
+        private val paint : Paint = Paint(Paint.ANTI_ALIAS_FLAG)
+
+        fun render(canvas : Canvas) {
+            canvas.drawColor(backColor)
+            mh.draw(canvas, paint)
+            animator.animate {
+                mh.update {
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            mh.startUpdating {
+                animator.start()
+            }
+        }
+    }
 }
