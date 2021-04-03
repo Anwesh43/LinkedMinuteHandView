@@ -5,6 +5,7 @@ import android.view.MotionEvent
 import android.graphics.Paint
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.RectF
 import android.app.Activity
 import android.content.Context
 
@@ -33,3 +34,38 @@ fun Int.inverse() : Float = 1f / this
 fun Float.maxScale(i : Int, n : Int) : Float = Math.max(0f, this - i * n)
 fun Float.divideScale(i : Int, n : Int) : Float = Math.min(n.inverse(), maxScale(i, n)) * n
 fun Float.sinify() : Float = Math.sin(this * Math.PI).toFloat()
+
+fun Canvas.drawMinuteHand(scale : Float, w : Float, h : Float, paint : Paint) {
+    val r : Float = Math.min(w, h) / arcFactor
+    val m : Float = Math.min(w, h) / minuteFactor
+    val h : Float = m / 2
+    val sf : Float = scale.sinify()
+    val sf1 : Float = sf.divideScale(0, parts)
+    val sf2 : Float = sf.divideScale(1, parts)
+    save()
+    translate(w / 2, h / 2)
+    paint.style = Paint.Style.STROKE
+    drawArc(RectF(-r, -r, r, r), 0f, 360f * sf1, false, paint)
+    var curr : Float = 0f
+    for (j in 0..(parts - 1)) {
+        save()
+        rotate(curr)
+        drawLine(0f, 0f, 0f, -m * sf2, paint)
+        restore()
+        save()
+        rotate(deg * sf.divideScale(2 + j, parts))
+        drawLine(0f, 0f, 0f, -h * sf2, paint)
+        restore()
+        curr += hourDeg * sf.divideScale(2 + j, parts)
+    }
+    restore()
+}
+
+fun Canvas.drawMHNode(i : Int, scale : Float, paint : Paint) {
+    val w : Float = width.toFloat()
+    val h : Float = height.toFloat()
+    paint.color = colors[i]
+    paint.strokeCap = Paint.Cap.ROUND
+    paint.strokeWidth = Math.min(w, h) / strokeFactor
+    drawMinuteHand(scale, w, h, paint)
+}
